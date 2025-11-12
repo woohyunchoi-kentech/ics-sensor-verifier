@@ -1,0 +1,115 @@
+import tenseal as ts
+import base64
+import requests
+import time
+import json
+import psutil
+import os
+from typing import Dict, Any, Tuple, Optional
+
+class CKKSBaseline:
+    def __init__(self):
+        self.context = None
+    
+    def load_server_public_key(self, key_file_path):
+        """서버 공개키로 컨텍스트 생성"""
+        try:
+            # 바이너리 파일 읽기
+            with open(key_file_path, 'rb') as f:
+                public_key_bytes = f.read()
+            
+            # 서버 공개키로 컨텍스트 생성
+            self.context = ts.context_from(public_key_bytes)
+            print(f"✅ 서버 공개키 로드: {len(public_key_bytes):,} bytes")
+            return True
+        except Exception as e:
+            print(f"❌ 공개키 로드 실패: {e}")
+            return False
+    
+    def encrypt_value(self, value):
+        """서버 키로 암호화"""
+        if self.context is None:
+            raise ValueError("서버 공개키를 먼저 로드하세요")
+        
+        encrypted = ts.ckks_vector(self.context, [float(value)])
+        encrypted_hex = encrypted.serialize().hex()
+        encrypted_size = len(encrypted.serialize())
+        
+        return encrypted_hex, encrypted_size
+    
+    def generate_proof(self, sensor_value: float, algorithm: str = "CKKS") -> Dict[str, Any]:
+        """센서 값에 대한 CKKS 증명 생성"""
+        if self.context is None:
+            raise ValueError("서버 공개키 먼저 로드하세요")
+        
+        start_time = time.time()
+        
+        try:
+            # 암호화
+            encrypted_hex, encrypted_size = self.encrypt_value(sensor_value)
+            encrypted_base64 = base64.b64encode(bytes.fromhex(encrypted_hex)).decode('utf-8')
+            
+            end_time = time.time()
+            total_time = (end_time - start_time) * 1000
+            
+            # Context 파라미터 정보
+            context_params = {
+                "poly_modulus_degree": 4096,
+                "coeff_mod_bit_sizes": [40, 20, 40],
+                "scale": 1048576,
+                "context_id": "lightweight"
+            }
+            
+            proof_data = {
+                "encrypted_data": encrypted_base64,
+                "context": "shared",  # 사전 공유 context 사용 표시
+                "context_id": "lightweight",  # 서버 필수 필드
+                "context_params": context_params,  # 서버 검증용 파라미터
+                "algorithm": algorithm,
+                "sensor_value": sensor_value,  # 검증용 (실제 배포에서는 제외)
+                "generation_time_ms": total_time,
+                "encrypted_size_bytes": len(bytes.fromhex(encrypted_hex)),
+                "timestamp": int(time.time()),
+                "privacy_level": "full_homomorphic",
+                "security_strength": "128-bit"
+            }
+            
+            return proof_data
+            
+        except Exception as e:
+            print(f"❌ CKKS proof generation failed: {e}")
+            raise e
+
+    # 기존 호환성을 위한 메서드들
+    def load_server_public_key_from_file(self, file_path):
+        """기존 호환성을 위한 래퍼"""
+        return self.load_server_public_key(file_path)
+    
+    def load_server_public_key_from_api(self, server_url='http://192.168.0.11:8085'):
+        """서버 API에서 공개키 자동 다운로드"""
+        try:
+            import requests
+            import base64
+            
+            # 공개키 API 호출 (올바른 URL)
+            response = requests.get(f'{server_url}/api/v1/ckks/public-key')
+            
+            if response.status_code == 200:
+                data = response.json()
+                public_key_base64 = data['public_key']
+                public_key_bytes = base64.b64decode(public_key_base64)
+                
+                # 서버 공개키로 컨텍스트 생성
+                self.context = ts.context_from(public_key_bytes)
+                
+                print(f"✅ 서버 공개키 로드 성공")
+                print(f"📊 크기: {len(public_key_bytes):,} bytes")
+                print(f"🔑 Context ID: {data.get('context_id', 'unknown')}")
+                return True
+            else:
+                print(f"❌ API 호출 실패: {response.status_code}")
+                return False
+                
+        except Exception as e:
+            print(f"❌ 공개키 로드 실패: {e}")
+            return False

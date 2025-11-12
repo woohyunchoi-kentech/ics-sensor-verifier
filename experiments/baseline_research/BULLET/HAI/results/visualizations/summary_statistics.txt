@@ -1,0 +1,55 @@
+HAI BulletProofs Performance Summary
+==================================================
+
+Total Experiments: 16
+Success Rate: 0.00%
+Average Processing Time: 33.13 ms
+Best Performance (Time): 4.08 ms
+Worst Performance (Time): 89.69 ms
+Average CPU Usage: 11.03%
+Average Memory Usage: 716.13 MB
+Proof Size: 1395 bytes
+
+
+Performance by Sensor Count:
+------------------------------
+
+1 Sensor(s):
+  Average Time: 59.11 ms
+  Min Time: 33.60 ms
+  Max Time: 89.69 ms
+
+10 Sensor(s):
+  Average Time: 33.68 ms
+  Min Time: 29.35 ms
+  Max Time: 37.85 ms
+
+50 Sensor(s):
+  Average Time: 35.56 ms
+  Min Time: 15.53 ms
+  Max Time: 47.77 ms
+
+100 Sensor(s):
+  Average Time: 4.16 ms
+  Min Time: 4.08 ms
+  Max Time: 4.31 ms
+
+
+Performance by Frequency:
+------------------------------
+
+1 Hz:
+  Average Time: 39.03 ms
+  Average Actual Frequency: 26.86 Hz
+
+2 Hz:
+  Average Time: 42.67 ms
+  Average Actual Frequency: 30.40 Hz
+
+10 Hz:
+  Average Time: 30.16 ms
+  Average Actual Frequency: 32.10 Hz
+
+100 Hz:
+  Average Time: 20.66 ms
+  Average Actual Frequency: 43.08 Hz

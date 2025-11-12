@@ -1,0 +1,452 @@
+#!/usr/bin/env python3
+"""
+16개 조건 모두 세부 시간 측정 HAI HMAC 실험
+==========================================
+전처리, 암호화, 전송, 복호화, 검증, 전체시간 모든 조건 측정
+"""
+
+import asyncio
+import time
+import aiohttp
+import hmac
+import hashlib
+import csv
+import json
+import psutil
+from datetime import datetime
+from pathlib import Path
+from dataclasses import dataclass
+from hai_data_loader import HAIDataLoader
+
+SERVER_URL = "http://192.168.0.11:8085/api/v1/verify/hmac"
+HMAC_KEY = b"default-insecure-key-change-in-production"
+
+@dataclass
+class HAIHMACDetailedResult:
+    """HAI HMAC 세부 결과"""
+    timestamp: datetime
+    sensor_count: int
+    frequency: int
+    sensor_id: str
+    sensor_value: float
+    preprocessing_time_ms: float
+    hmac_generation_time_ms: float
+    network_rtt_ms: float
+    decryption_time_ms: float
+    hmac_verification_time_ms: float
+    total_time_ms: float
+    success: bool
+    verification_success: bool
+    data_size_bytes: int
+    cpu_usage_percent: float
+    memory_usage_mb: float
+    error_message: str = ""
+
+def generate_hmac_message(sensor_id: str, timestamp: int, value: float) -> str:
+    return f"{sensor_id}|{timestamp}|{value:.6f}"
+
+def generate_hmac_with_timing(message: str, key: bytes) -> tuple:
+    """HMAC 생성 시간 측정"""
+    start = time.perf_counter()
+    hmac_value = hmac.new(key, message.encode(), hashlib.sha256).hexdigest()
+    end = time.perf_counter()
+    generation_time_ms = (end - start) * 1000
+    return hmac_value, generation_time_ms
+
+async def send_detailed_request(session, sensor_id, value, hai_loader):
+    """세부 시간 측정이 포함된 요청"""
+    total_start = time.perf_counter()
+    
+    # CPU/메모리 측정
+    cpu_before = psutil.cpu_percent()
+    memory_info = psutil.virtual_memory()
+    memory_usage_mb = memory_info.used / (1024 * 1024)
+    
+    try:
+        # 1. 전처리 시간 (데이터 로딩 및 준비)
+        preprocess_start = time.perf_counter()
+        timestamp = int(time.time())
+        # 실제 HAI 데이터에서 센서값 가져오기
+        if hasattr(hai_loader, 'get_sensor_value'):
+            value = hai_loader.get_sensor_value(sensor_id)
+        preprocess_end = time.perf_counter()
+        preprocessing_time_ms = (preprocess_end - preprocess_start) * 1000
+        
+        # 2. HMAC 생성 시간
+        message = generate_hmac_message(sensor_id, timestamp, value)
+        hmac_value, hmac_generation_time_ms = generate_hmac_with_timing(message, HMAC_KEY)
+        
+        # 요청 페이로드 준비
+        payload = {
+            "sensor_value": value,
+            "timestamp": timestamp,
+            "received_mac": hmac_value,
+            "sensor_id": sensor_id
+        }
+        
+        data_size_bytes = len(json.dumps(payload).encode('utf-8'))
+        
+        # 3. 네트워크 전송 시간
+        network_start = time.perf_counter()
+        async with session.post(SERVER_URL, json=payload) as response:
+            network_end = time.perf_counter()
+            network_rtt_ms = (network_end - network_start) * 1000
+            
+            if response.status == 200:
+                response_data = await response.json()
+                
+                # 4. 서버 응답에서 복호화 및 검증 시간 추출
+                decryption_time_ms = response_data.get('decryption_time_ms', 0.0)
+                hmac_verification_time_ms = response_data.get('processing_time_ms', 0.0)
+                verification_success = response_data.get('verified', False)
+                success = True
+                error_message = ""
+            else:
+                decryption_time_ms = 0.0
+                hmac_verification_time_ms = 0.0
+                verification_success = False
+                success = False
+                error_message = f"HTTP {response.status}"
+        
+        # CPU 사용률 측정
+        cpu_after = psutil.cpu_percent()
+        cpu_usage = max(cpu_after, cpu_before)
+        
+        # 전체 소요 시간
+        total_end = time.perf_counter()
+        total_time_ms = (total_end - total_start) * 1000
+        
+        return HAIHMACDetailedResult(
+            timestamp=datetime.now(),
+            sensor_count=1,
+            frequency=0,
+            sensor_id=sensor_id,
+            sensor_value=value,
+            preprocessing_time_ms=preprocessing_time_ms,
+            hmac_generation_time_ms=hmac_generation_time_ms,
+            network_rtt_ms=network_rtt_ms,
+            decryption_time_ms=decryption_time_ms,
+            hmac_verification_time_ms=hmac_verification_time_ms,
+            total_time_ms=total_time_ms,
+            success=success,
+            verification_success=verification_success,
+            data_size_bytes=data_size_bytes,
+            cpu_usage_percent=cpu_usage,
+            memory_usage_mb=memory_usage_mb,
+            error_message=error_message
+        )
+        
+    except Exception as e:
+        total_end = time.perf_counter()
+        total_time_ms = (total_end - total_start) * 1000
+        
+        return HAIHMACDetailedResult(
+            timestamp=datetime.now(),
+            sensor_count=1,
+            frequency=0,
+            sensor_id=sensor_id,
+            sensor_value=value,
+            preprocessing_time_ms=0.0,
+            hmac_generation_time_ms=0.0,
+            network_rtt_ms=0.0,
+            decryption_time_ms=0.0,
+            hmac_verification_time_ms=0.0,
+            total_time_ms=total_time_ms,
+            success=False,
+            verification_success=False,
+            data_size_bytes=0,
+            cpu_usage_percent=0.0,
+            memory_usage_mb=0.0,
+            error_message=str(e)
+        )
+
+async def run_detailed_condition(sensor_count, frequency, max_requests, hai_loader):
+    """세부 시간 측정이 포함된 조건 실행"""
+    
+    print(f"\n🚀 HAI 세부 실험: {sensor_count}센서 × {frequency}Hz × {max_requests:,}개 요청")
+    
+    # 샘플 크기 조정 (전체 실험이므로 빠른 측정)
+    sample_size = min(100, max_requests)  # 최대 100개씩 샘플링
+    
+    interval = 1.0 / frequency
+    timeout = aiohttp.ClientTimeout(total=10)
+    
+    async with aiohttp.ClientSession(timeout=timeout) as session:
+        results = []
+        request_count = 0
+        transmission_id = 0
+        
+        start_time = time.time()
+        
+        print(f"📤 세부 시간 측정 ({sample_size}개 샘플)")
+        
+        while request_count < sample_size:
+            target_time = start_time + (transmission_id * interval)
+            current_time = time.time()
+            
+            wait_time = target_time - current_time
+            if wait_time > 0.001:
+                await asyncio.sleep(min(wait_time, 0.1))
+                continue
+            
+            # 실제 HAI 센서들 사용
+            tasks = []
+            sensors = hai_loader.get_sensor_list(sensor_count)
+            
+            for sensor in sensors:
+                if request_count >= sample_size:
+                    break
+                
+                task = asyncio.create_task(
+                    send_detailed_request(session, sensor, 0.0, hai_loader)
+                )
+                tasks.append(task)
+                request_count += 1
+            
+            # 병렬 전송
+            if tasks:
+                batch_results = await asyncio.gather(*tasks, return_exceptions=True)
+                for result in batch_results:
+                    if isinstance(result, HAIHMACDetailedResult):
+                        result.frequency = frequency
+                        result.sensor_count = sensor_count
+                        results.append(result)
+            
+            transmission_id += 1
+        
+        # 결과 분석
+        total_duration = time.time() - start_time
+        successful = sum(1 for r in results if r.success)
+        verified = sum(1 for r in results if r.verification_success)
+        
+        # 평균 시간 계산
+        successful_results = [r for r in results if r.success]
+        if successful_results:
+            avg_preprocessing = sum(r.preprocessing_time_ms for r in successful_results) / len(successful_results)
+            avg_hmac_gen = sum(r.hmac_generation_time_ms for r in successful_results) / len(successful_results)
+            avg_network = sum(r.network_rtt_ms for r in successful_results) / len(successful_results)
+            avg_decryption = sum(r.decryption_time_ms for r in successful_results) / len(successful_results)
+            avg_verification = sum(r.hmac_verification_time_ms for r in successful_results) / len(successful_results)
+            avg_total = sum(r.total_time_ms for r in successful_results) / len(successful_results)
+        else:
+            avg_preprocessing = avg_hmac_gen = avg_network = 0.0
+            avg_decryption = avg_verification = avg_total = 0.0
+        
+        condition_result = {
+            "condition_id": f"{sensor_count}x{frequency}",
+            "algorithm": "HMAC",
+            "dataset": "HAI",
+            "sensor_count": sensor_count,
+            "frequency": frequency,
+            "sample_requests": len(results),
+            "successful_requests": successful,
+            "verified_requests": verified,
+            "duration_seconds": round(total_duration, 2),
+            "success_rate": round((successful / max(1, len(results))) * 100, 2),
+            "verification_rate": round((verified / max(1, len(results))) * 100, 2),
+            "actual_rps": round(len(results) / total_duration, 1) if total_duration > 0 else 0,
+            "avg_preprocessing_ms": round(avg_preprocessing, 3),
+            "avg_hmac_generation_ms": round(avg_hmac_gen, 3),
+            "avg_network_rtt_ms": round(avg_network, 2),
+            "avg_decryption_ms": round(avg_decryption, 3),
+            "avg_verification_ms": round(avg_verification, 3),
+            "avg_total_time_ms": round(avg_total, 2)
+        }
+        
+        print(f"✅ 완료: {successful:,}/{len(results):,} 성공 ({condition_result['success_rate']:.1f}%), "
+              f"{verified:,} 검증 ({condition_result['verification_rate']:.1f}%)")
+        print(f"⏱️  세부: 전처리{avg_preprocessing:.3f} + 암호화{avg_hmac_gen:.3f} + 전송{avg_network:.2f} + 검증{avg_verification:.3f} = 총{avg_total:.2f}ms")
+        
+        return condition_result, results
+
+async def main():
+    """16개 조건 모두 세부 시간 측정 HAI HMAC 실험"""
+    
+    print("🌊 완전한 16개 조건 HAI HMAC 세부 시간 실험")
+    print("=" * 70)
+    print("📊 측정: 전처리→암호화→전송→복호화→검증→전체")
+    print("🎯 목표: 16개 조건 모두 세부 시간 분석")
+    print("📂 데이터셋: HAI (Hardware-in-the-loop Augmented ICS)")
+    print("=" * 70)
+    
+    # HAI 데이터 로더 초기화
+    print("📂 HAI 데이터셋 로드 중...")
+    hai_loader = HAIDataLoader()
+    print("✅ HAI 데이터 로드 완료")
+    
+    # 베이스라인 16개 조건 정의
+    sensor_counts = [1, 10, 50, 100]
+    frequencies = [1, 2, 10, 100]
+    max_requests = 1000
+    
+    conditions = []
+    for sensor_count in sensor_counts:
+        for frequency in frequencies:
+            conditions.append((sensor_count, frequency, max_requests))
+    
+    total_conditions = len(conditions)
+    print(f"🚀 총 {total_conditions}개 조건 세부 시간 측정 시작")
+    
+    # Phase 구조로 실험 진행
+    phases = [
+        ("Phase 1: 기본 조건 (1센서)", conditions[0:4]),
+        ("Phase 2: 중간 조건 (10센서)", conditions[4:8]),
+        ("Phase 3: 대규모 조건 (50센서)", conditions[8:12]),
+        ("Phase 4: 최대 조건 (100센서)", conditions[12:16])
+    ]
+    
+    all_condition_results = []
+    all_detailed_results = []
+    
+    condition_num = 0
+    for phase_name, phase_conditions in phases:
+        print(f"\n{'='*70}")
+        print(f"🎯 {phase_name}")
+        print(f"{'='*70}")
+        
+        for sensor_count, frequency, max_req in phase_conditions:
+            condition_num += 1
+            print(f"\n📍 세부 측정 조건 {condition_num}/{total_conditions}")
+            
+            try:
+                condition_result, detailed_results = await run_detailed_condition(
+                    sensor_count, frequency, max_req, hai_loader
+                )
+                all_condition_results.append(condition_result)
+                all_detailed_results.extend(detailed_results)
+                
+                print(f"✅ 조건 {condition_num} 완료")
+                
+                # 조건 간 짧은 휴식 (마지막 제외)
+                if condition_num < total_conditions:
+                    print("⏸️  2초 휴식...")
+                    await asyncio.sleep(2)
+                    
+            except KeyboardInterrupt:
+                print(f"\n⏹️ 실험 중단됨 (완료: {condition_num-1}/{total_conditions})")
+                break
+            except Exception as e:
+                print(f"❌ 조건 {condition_num} 실패: {e}")
+                continue
+        
+        # Phase마다 중간 저장
+        if all_condition_results:
+            save_intermediate_results(all_condition_results, all_detailed_results, condition_num)
+    
+    # 최종 결과 저장 및 분석
+    save_final_detailed_results(all_condition_results, all_detailed_results)
+    print_comprehensive_detailed_summary(all_condition_results)
+    
+    print(f"\n🎉 HAI HMAC 16개 조건 세부 시간 측정 완료!")
+
+def save_intermediate_results(condition_results, detailed_results, condition_num):
+    """중간 결과 저장"""
+    results_dir = Path("hai_hmac_results")
+    results_dir.mkdir(exist_ok=True)
+    
+    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+    csv_path = results_dir / f"detailed_progress_{condition_num:02d}_{timestamp}.csv"
+    
+    with open(csv_path, 'w', newline='', encoding='utf-8') as f:
+        if condition_results:
+            writer = csv.DictWriter(f, fieldnames=condition_results[0].keys())
+            writer.writeheader()
+            writer.writerows(condition_results)
+    
+    print(f"💾 중간 저장: {csv_path.name}")
+
+def save_final_detailed_results(condition_results, detailed_results):
+    """최종 세부 결과 저장"""
+    results_dir = Path("hai_hmac_results")
+    results_dir.mkdir(exist_ok=True)
+    
+    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+    
+    # 조건별 세부 시간 요약 저장
+    summary_path = results_dir / f"hai_hmac_16conditions_detailed_{timestamp}.csv"
+    with open(summary_path, 'w', newline='', encoding='utf-8') as f:
+        if condition_results:
+            writer = csv.DictWriter(f, fieldnames=condition_results[0].keys())
+            writer.writeheader()
+            writer.writerows(condition_results)
+    
+    # 개별 요청 세부 결과 저장
+    detailed_path = results_dir / f"hai_hmac_16conditions_individual_{timestamp}.csv"
+    with open(detailed_path, 'w', newline='', encoding='utf-8') as f:
+        fieldnames = [
+            'timestamp', 'sensor_count', 'frequency', 'sensor_id', 'sensor_value',
+            'preprocessing_time_ms', 'hmac_generation_time_ms', 'network_rtt_ms',
+            'decryption_time_ms', 'hmac_verification_time_ms', 'total_time_ms',
+            'success', 'verification_success', 'data_size_bytes',
+            'cpu_usage_percent', 'memory_usage_mb', 'error_message'
+        ]
+        writer = csv.DictWriter(f, fieldnames=fieldnames)
+        writer.writeheader()
+        
+        for result in detailed_results:
+            writer.writerow({
+                'timestamp': result.timestamp.isoformat(),
+                'sensor_count': result.sensor_count,
+                'frequency': result.frequency,
+                'sensor_id': result.sensor_id,
+                'sensor_value': result.sensor_value,
+                'preprocessing_time_ms': result.preprocessing_time_ms,
+                'hmac_generation_time_ms': result.hmac_generation_time_ms,
+                'network_rtt_ms': result.network_rtt_ms,
+                'decryption_time_ms': result.decryption_time_ms,
+                'hmac_verification_time_ms': result.hmac_verification_time_ms,
+                'total_time_ms': result.total_time_ms,
+                'success': result.success,
+                'verification_success': result.verification_success,
+                'data_size_bytes': result.data_size_bytes,
+                'cpu_usage_percent': result.cpu_usage_percent,
+                'memory_usage_mb': result.memory_usage_mb,
+                'error_message': result.error_message
+            })
+    
+    print(f"\n💾 최종 세부 결과 저장:")
+    print(f"   조건 요약: {summary_path.name}")
+    print(f"   개별 상세: {detailed_path.name}")
+
+def print_comprehensive_detailed_summary(results):
+    """16개 조건 세부 시간 종합 요약"""
+    if not results:
+        return
+    
+    print(f"\n{'='*100}")
+    print("🏁 HAI HMAC 16개 조건 세부 시간 측정 결과")
+    print(f"{'='*100}")
+    
+    print(f"{'#':>2} {'센서':>4} {'주파수':>6} {'성공률':>6} {'검증률':>6} {'전처리':>8} {'암호화':>8} {'전송':>8} {'검증':>8} {'전체':>8}")
+    print(f"{'-'*100}")
+    
+    for i, result in enumerate(results, 1):
+        print(f"{i:2d} {result['sensor_count']:4d} {result['frequency']:4d}Hz "
+              f"{result['success_rate']:5.1f}% {result['verification_rate']:5.1f}% "
+              f"{result['avg_preprocessing_ms']:7.3f}ms {result['avg_hmac_generation_ms']:7.3f}ms "
+              f"{result['avg_network_rtt_ms']:7.2f}ms {result['avg_verification_ms']:7.3f}ms "
+              f"{result['avg_total_time_ms']:7.2f}ms")
+    
+    # 전체 평균 계산
+    if results:
+        avg_preprocessing = sum(r['avg_preprocessing_ms'] for r in results) / len(results)
+        avg_hmac = sum(r['avg_hmac_generation_ms'] for r in results) / len(results)
+        avg_network = sum(r['avg_network_rtt_ms'] for r in results) / len(results)
+        avg_verification = sum(r['avg_verification_ms'] for r in results) / len(results)
+        avg_total = sum(r['avg_total_time_ms'] for r in results) / len(results)
+        
+        print(f"{'-'*100}")
+        print(f"{'평균':>12} {'':>6} {'':>6} "
+              f"{avg_preprocessing:7.3f}ms {avg_hmac:7.3f}ms "
+              f"{avg_network:7.2f}ms {avg_verification:7.3f}ms "
+              f"{avg_total:7.2f}ms")
+        
+        print(f"\n💡 세부 시간 분석 요약:")
+        print(f"   • 전처리시간: {avg_preprocessing:.3f}ms (HAI 데이터 로딩)")
+        print(f"   • 암호화시간: {avg_hmac:.3f}ms (HMAC-SHA256 생성)")
+        print(f"   • 전송시간: {avg_network:.2f}ms (네트워크 RTT)")
+        print(f"   • 검증시간: {avg_verification:.3f}ms (서버 HMAC 검증)")
+        print(f"   • 총 소요시간: {avg_total:.2f}ms (전체 프로세스)")
+
+if __name__ == "__main__":
+    asyncio.run(main())

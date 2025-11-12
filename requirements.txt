@@ -1,0 +1,55 @@
+# Core dependencies
+numpy>=1.24.0
+pandas>=2.0.0
+matplotlib>=3.7.0
+seaborn>=0.12.0
+
+# Cryptography
+cryptography>=41.0.0
+petlib>=0.0.45
+pynacl>=1.5.0  # Ed25519 지원
+
+# Async HTTP
+aiohttp>=3.9.0
+aiofiles>=23.2.0
+requests>=2.31.0
+httpx>=0.25.0  # 비동기 HTTP 클라이언트
+
+# Performance monitoring
+psutil>=5.9.0
+memory_profiler>=0.61.0
+py-cpuinfo>=9.0.0
+
+# Progress bars and UI
+tqdm>=4.66.0
+rich>=13.7.0
+tabulate>=0.9.0
+
+# Data processing
+scikit-learn>=1.3.0
+scipy>=1.11.0
+
+# Configuration and logging
+pyyaml>=6.0
+python-dotenv>=1.0.0
+colorlog>=6.8.0
+loguru>=0.7.0  # 고급 로깅
+
+# Testing
+pytest>=7.4.0
+pytest-asyncio>=0.21.0
+pytest-cov>=4.1.0
+pytest-benchmark>=4.0.0
+
+# Optional: Homomorphic encryption for comparison
+# tenseal>=0.3.14  # CKKS 비교용 (선택사항, 주석 처리)
+
+# Development tools
+black>=23.0.0  # 코드 포매팅
+flake8>=6.1.0  # 린팅
+mypy>=1.7.0    # 타입 체킹
+ipython>=8.17.0  # 대화형 셸
+
+# Apple Silicon 최적화 패키지
+# M1/M2/M3 Mac에서 최적 성능을 위한 패키지
+accelerate>=0.24.0  # 하드웨어 가속

@@ -1,0 +1,1307 @@
+{
+  "analysis_timestamp": 1756090549.684293,
+  "total_sensors_analyzed": 225,
+  "selected_sensors_count": 100,
+  "sensors": {
+    "DM-FT02": {
+      "type": "FLOW",
+      "range": {
+        "min": 3.471389,
+        "max": 2506.675781,
+        "mean": 1098.2558971414317
+      },
+      "stats": {
+        "std": 1047.42864588913,
+        "count": 280800,
+        "data_quality": 1.0
+      }
+    },
+    "DM-FT02Z": {
+      "type": "FLOW",
+      "range": {
+        "min": 18.074366,
+        "max": 3190.0,
+        "mean": 1669.4470103693054
+      },
+      "stats": {
+        "std": 1286.9651396417426,
+        "count": 280800,
+        "data_quality": 1.0
+      }
+    },
+    "1003.10-OUT": {
+      "type": "OTHER",
+      "range": {
+        "min": 18.074366,
+        "max": 3190.0,
+        "mean": 1669.443115724088
+      },
+      "stats": {
+        "std": 1286.9573368603956,
+        "count": 280800,
+        "data_quality": 1.0
+      }
+    },
+    "DM-FCV02-Z": {
+      "type": "DIGITAL_MOTOR",
+      "range": {
+        "min": 12.30011,
+        "max": 97.596741,
+        "mean": 39.97177103786324
+      },
+      "stats": {
+        "std": 37.254102413156694,
+        "count": 280800,
+        "data_quality": 1.0
+      }
+    },
+    "DM-FT01Z": {
+      "type": "FLOW",
+      "range": {
+        "min": 4.170747,
+        "max": 892.227173,
+        "mean": 323.00244359796653
+      },
+      "stats": {
+        "std": 40.56322503227773,
+        "count": 280800,
+        "data_quality": 1.0
+      }
+    },
+    "1004.21-OUT": {
+      "type": "OTHER",
+      "range": {
+        "min": 0.0,
+        "max": 1.0,
+        "mean": 0.4077207977207977
+      },
+      "stats": {
+        "std": 0.4914116490453662,
+        "count": 280800,
+        "data_quality": 1.0
+      }
+    },
+    "1004.24-OUT": {
+      "type": "OTHER",
+      "range": {
+        "min": 0.0,
+        "max": 1.0,
+        "mean": 0.47433404558404557
+      },
+      "stats": {
+        "std": 0.49934171341329603,
+        "count": 280800,
+        "data_quality": 1.0
+      }
+    },
+    "1020.18-OUT": {
+      "type": "OTHER",
+      "range": {
+        "min": 0.0,
+        "max": 1.0,
+        "mean": 0.33881054131054134
+      },
+      "stats": {
+        "std": 0.473306197080698,
+        "count": 280800,
+        "data_quality": 1.0
+      }
+    },
+    "1020.21-OUT": {
+      "type": "OTHER",
+      "range": {
+        "min": 0.0,
+        "max": 1.0,
+        "mean": 0.0002635327635327635
+      },
+      "stats": {
+        "std": 0.016231581940104142,
+        "count": 280800,
+        "data_quality": 1.0
+      }
+    },
+    "DM-PWIT-03": {
+      "type": "DIGITAL_MOTOR",
+      "range": {
+        "min": -0.006819,
+        "max": 0.009905,
+        "mean": 0.0005584689565527066
+      },
+      "stats": {
+        "std": 0.0013388538422821248,
+        "count": 280800,
+        "data_quality": 1.0
+      }
+    },
+    "DM-FCV02-D": {
+      "type": "DIGITAL_MOTOR",
+      "range": {
+        "min": 15.0,
+        "max": 100.0,
+        "mean": 44.14441726482906
+      },
+      "stats": {
+        "std": 40.04237637692372,
+        "count": 280800,
+        "data_quality": 1.0
+      }
+    },
+    "DM-HT01-D": {
+      "type": "DIGITAL_MOTOR",
+      "range": {
+        "min": 0.0,
+        "max": 1.0,
+        "mean": 0.5256695156695157
+      },
+      "stats": {
+        "std": 0.4993415303529735,
+        "count": 280800,
+        "data_quality": 1.0
+      }
+    },
+    "1003.25-OUT": {
+      "type": "OTHER",
+      "range": {
+        "min": 0.0,
+        "max": 100.0,
+        "mean": 52.32050342084759
+      },
+      "stats": {
+        "std": 40.96127872368476,
+        "count": 280800,
+        "data_quality": 1.0
+      }
+    },
+    "1003.5-OUT": {
+      "type": "OTHER",
+      "range": {
+        "min": 0.566994,
+        "max": 100.0,
+        "mean": 52.33486339122506
+      },
+      "stats": {
+        "std": 40.34756633811539,
+        "count": 280800,
+        "data_quality": 1.0
+      }
+    },
+    "DM-FCV01-Z": {
+      "type": "DIGITAL_MOTOR",
+      "range": {
+        "min": 0.321959,
+        "max": 81.910698,
+        "mean": 33.260467278176634
+      },
+      "stats": {
+        "std": 26.106226998485177,
+        "count": 280800,
+        "data_quality": 1.0
+      }
+    },
+    "1003.17-OUT": {
+      "type": "OTHER",
+      "range": {
+        "min": 0.0,
+        "max": 81.421516,
+        "mean": 33.383532210701574
+      },
+      "stats": {
+        "std": 25.843430001825308,
+        "count": 280800,
+        "data_quality": 1.0
+      }
+    },
+    "1003.11-OUT": {
+      "type": "OTHER",
+      "range": {
+        "min": 0.0,
+        "max": 81.421516,
+        "mean": 33.38359124759972
+      },
+      "stats": {
+        "std": 25.843442615521752,
+        "count": 280800,
+        "data_quality": 1.0
+      }
+    },
+    "1003.26-OUT": {
+      "type": "OTHER",
+      "range": {
+        "min": 0.0,
+        "max": 81.421516,
+        "mean": 33.383515124298434
+      },
+      "stats": {
+        "std": 25.84338067700471,
+        "count": 280800,
+        "data_quality": 1.0
+      }
+    },
+    "1003.29-OUT": {
+      "type": "OTHER",
+      "range": {
+        "min": 0.0,
+        "max": 81.421516,
+        "mean": 33.383515290844024
+      },
+      "stats": {
+        "std": 25.843380462101486,
+        "count": 280800,
+        "data_quality": 1.0
+      }
+    },
+    "1003.30-OUT": {
+      "type": "OTHER",
+      "range": {
+        "min": 0.0,
+        "max": 81.421516,
+        "mean": 33.383515290844024
+      },
+      "stats": {
+        "std": 25.843380462101486,
+        "count": 280800,
+        "data_quality": 1.0
+      }
+    },
+    "DM-FCV01-D": {
+      "type": "DIGITAL_MOTOR",
+      "range": {
+        "min": 0.0,
+        "max": 81.421516,
+        "mean": 33.3837695395762
+      },
+      "stats": {
+        "std": 25.843392871341734,
+        "count": 280800,
+        "data_quality": 1.0
+      }
+    },
+    "1020.20-OUT": {
+      "type": "OTHER",
+      "range": {
+        "min": 0.0,
+        "max": 1.0,
+        "mean": 0.6019586894586895
+      },
+      "stats": {
+        "std": 0.4894949222811403,
+        "count": 280800,
+        "data_quality": 1.0
+      }
+    },
+    "1020.14-OUT": {
+      "type": "OTHER",
+      "range": {
+        "min": 0.0,
+        "max": 100.0,
+        "mean": 58.044119191837595
+      },
+      "stats": {
+        "std": 40.73757803036012,
+        "count": 280800,
+        "data_quality": 1.0
+      }
+    },
+    "1020.13-OUT": {
+      "type": "OTHER",
+      "range": {
+        "min": 0.0,
+        "max": 100.0,
+        "mean": 58.044146761264244
+      },
+      "stats": {
+        "std": 40.737581817915014,
+        "count": 280800,
+        "data_quality": 1.0
+      }
+    },
+    "DM-PP04-D": {
+      "type": "DIGITAL_MOTOR",
+      "range": {
+        "min": 0.0,
+        "max": 1.0,
+        "mean": 0.6362998575498575
+      },
+      "stats": {
+        "std": 0.48106462454486043,
+        "count": 280800,
+        "data_quality": 1.0
+      }
+    },
+    "DM-PP04-AO": {
+      "type": "DIGITAL_MOTOR",
+      "range": {
+        "min": 0.0,
+        "max": 45.0,
+        "mean": 25.166240422788455
+      },
+      "stats": {
+        "std": 16.494787042729328,
+        "count": 280800,
+        "data_quality": 1.0
+      }
+    },
+    "1020.15-OUT": {
+      "type": "OTHER",
+      "range": {
+        "min": 0.0,
+        "max": 40.0,
+        "mean": 25.028239993992166
+      },
+      "stats": {
+        "std": 16.412599277459652,
+        "count": 280800,
+        "data_quality": 1.0
+      }
+    },
+    "DM-PIT02": {
+      "type": "PRESSURE",
+      "range": {
+        "min": 0.312195,
+        "max": 1.542816,
+        "mean": 0.605717646723647
+      },
+      "stats": {
+        "std": 0.35897177426542254,
+        "count": 280800,
+        "data_quality": 1.0
+      }
+    },
+    "DM-FT01": {
+      "type": "FLOW",
+      "range": {
+        "min": 0.80104,
+        "max": 198.783844,
+        "mean": 62.03991381668448
+      },
+      "stats": {
+        "std": 7.840255864581491,
+        "count": 280800,
+        "data_quality": 1.0
+      }
+    },
+    "1001.5-OUT": {
+      "type": "OTHER",
+      "range": {
+        "min": 0.051258,
+        "max": 0.19579,
+        "mean": 0.1414134320548433
+      },
+      "stats": {
+        "std": 0.041877218858597826,
+        "count": 280800,
+        "data_quality": 1.0
+      }
+    },
+    "DM-LCV01-Z": {
+      "type": "DIGITAL_MOTOR",
+      "range": {
+        "min": 0.314331,
+        "max": 35.020447,
+        "mean": 14.904925800662392
+      },
+      "stats": {
+        "std": 2.7990183906427113,
+        "count": 280800,
+        "data_quality": 1.0
+      }
+    },
+    "DM-LIT01": {
+      "type": "LEVEL",
+      "range": {
+        "min": 285.600586,
+        "max": 426.529999,
+        "mean": 355.45602472655276
+      },
+      "stats": {
+        "std": 28.895409319805513,
+        "count": 280800,
+        "data_quality": 1.0
+      }
+    },
+    "1002.21-OUT": {
+      "type": "OTHER",
+      "range": {
+        "min": 0.836727,
+        "max": 35.91185,
+        "mean": 15.483266920537746
+      },
+      "stats": {
+        "std": 2.882253532073946,
+        "count": 280800,
+        "data_quality": 1.0
+      }
+    },
+    "1002.30-OUT": {
+      "type": "OTHER",
+      "range": {
+        "min": 0.836727,
+        "max": 35.91185,
+        "mean": 15.483266920537746
+      },
+      "stats": {
+        "std": 2.882253532073946,
+        "count": 280800,
+        "data_quality": 1.0
+      }
+    },
+    "DM-LCV01-D": {
+      "type": "DIGITAL_MOTOR",
+      "range": {
+        "min": 0.811625,
+        "max": 34.834496,
+        "mean": 15.018733769943019
+      },
+      "stats": {
+        "std": 2.7958376578147495,
+        "count": 280800,
+        "data_quality": 1.0
+      }
+    },
+    "1002.31-OUT": {
+      "type": "OTHER",
+      "range": {
+        "min": 0.811625,
+        "max": 34.834496,
+        "mean": 15.018769354821936
+      },
+      "stats": {
+        "std": 2.7957860067431954,
+        "count": 280800,
+        "data_quality": 1.0
+      }
+    },
+    "DM-FT03Z": {
+      "type": "FLOW",
+      "range": {
+        "min": 936.149719,
+        "max": 1063.686523,
+        "mean": 996.0861801556231
+      },
+      "stats": {
+        "std": 26.52654109056606,
+        "count": 280800,
+        "data_quality": 1.0
+      }
+    },
+    "DM-FT03": {
+      "type": "FLOW",
+      "range": {
+        "min": 218.048111,
+        "max": 282.707214,
+        "mean": 245.36216130603992
+      },
+      "stats": {
+        "std": 13.320421235748487,
+        "count": 280800,
+        "data_quality": 1.0
+      }
+    },
+    "DM-PCV01-D": {
+      "type": "DIGITAL_MOTOR",
+      "range": {
+        "min": 13.156593,
+        "max": 39.304913,
+        "mean": 27.641996988539894
+      },
+      "stats": {
+        "std": 2.436935407346821,
+        "count": 280800,
+        "data_quality": 1.0
+      }
+    },
+    "DM-PCV01-Z": {
+      "type": "DIGITAL_MOTOR",
+      "range": {
+        "min": 13.55133,
+        "max": 39.689636,
+        "mean": 28.094315151937316
+      },
+      "stats": {
+        "std": 2.4544254887128716,
+        "count": 280800,
+        "data_quality": 1.0
+      }
+    },
+    "GATEOPEN": {
+      "type": "ANALYTICAL",
+      "range": {
+        "min": 4.652557,
+        "max": 9.717712,
+        "mean": 6.562968839967946
+      },
+      "stats": {
+        "std": 0.6716652590078646,
+        "count": 280800,
+        "data_quality": 1.0
+      }
+    },
+    "DM-PIT01": {
+      "type": "PRESSURE",
+      "range": {
+        "min": 0.484619,
+        "max": 2.047882,
+        "mean": 1.1258526261858977
+      },
+      "stats": {
+        "std": 0.10567597135873669,
+        "count": 280800,
+        "data_quality": 1.0
+      }
+    },
+    "DM-FCV03-Z": {
+      "type": "DIGITAL_MOTOR",
+      "range": {
+        "min": 48.959347,
+        "max": 66.86554,
+        "mean": 54.546980131552715
+      },
+      "stats": {
+        "std": 2.948887993297154,
+        "count": 280800,
+        "data_quality": 1.0
+      }
+    },
+    "DM-FCV03-D": {
+      "type": "DIGITAL_MOTOR",
+      "range": {
+        "min": 48.398033,
+        "max": 66.125656,
+        "mean": 53.87192316262823
+      },
+      "stats": {
+        "std": 2.8724551198594237,
+        "count": 280800,
+        "data_quality": 1.0
+      }
+    },
+    "DM-TIT02": {
+      "type": "TEMPERATURE",
+      "range": {
+        "min": 32.522579,
+        "max": 39.61792,
+        "mean": 35.99538978865741
+      },
+      "stats": {
+        "std": 1.908348058351653,
+        "count": 280800,
+        "data_quality": 1.0
+      }
+    },
+    "DM-TIT01": {
+      "type": "TEMPERATURE",
+      "range": {
+        "min": 27.853395,
+        "max": 34.12476,
+        "mean": 30.639301704551283
+      },
+      "stats": {
+        "std": 1.3238062545391727,
+        "count": 280800,
+        "data_quality": 1.0
+      }
+    },
+    "DM-TWIT-03": {
+      "type": "DIGITAL_MOTOR",
+      "range": {
+        "min": 25.905792,
+        "max": 30.595795,
+        "mean": 28.167043386531347
+      },
+      "stats": {
+        "std": 1.1867257764574632,
+        "count": 280800,
+        "data_quality": 1.0
+      }
+    },
+    "DM-TWIT-04": {
+      "type": "DIGITAL_MOTOR",
+      "range": {
+        "min": 27.37265,
+        "max": 31.980042,
+        "mean": 29.53908971457977
+      },
+      "stats": {
+        "std": 0.9608710742584782,
+        "count": 280800,
+        "data_quality": 1.0
+      }
+    },
+    "DM-AIT-DO": {
+      "type": "ANALYTICAL",
+      "range": {
+        "min": 0.084228,
+        "max": 0.096435,
+        "mean": 0.0894908393482906
+      },
+      "stats": {
+        "std": 0.0022246126328789684,
+        "count": 280800,
+        "data_quality": 1.0
+      }
+    },
+    "DM-TWIT-05": {
+      "type": "DIGITAL_MOTOR",
+      "range": {
+        "min": 26.141724,
+        "max": 28.328552,
+        "mean": 26.729663350719367
+      },
+      "stats": {
+        "std": 0.47367114859987025,
+        "count": 280800,
+        "data_quality": 1.0
+      }
+    },
+    "DM-AIT-PH": {
+      "type": "ANALYTICAL",
+      "range": {
+        "min": 3.591217,
+        "max": 3.869995,
+        "mean": 3.713947627012108
+      },
+      "stats": {
+        "std": 0.06874336870568418,
+        "count": 280800,
+        "data_quality": 1.0
+      }
+    },
+    "DM-PCV02-Z": {
+      "type": "DIGITAL_MOTOR",
+      "range": {
+        "min": 11.788939,
+        "max": 16.297911,
+        "mean": 11.96271651665598
+      },
+      "stats": {
+        "std": 0.1215693415172372,
+        "count": 280800,
+        "data_quality": 1.0
+      }
+    },
+    "DM-PCV02-D": {
+      "type": "DIGITAL_MOTOR",
+      "range": {
+        "min": 12.0,
+        "max": 16.448215,
+        "mean": 12.000758441114671
+      },
+      "stats": {
+        "std": 0.03765733498302561,
+        "count": 280800,
+        "data_quality": 1.0
+      }
+    },
+    "DM-PP01-R": {
+      "type": "DIGITAL_MOTOR",
+      "range": {
+        "min": 0.0,
+        "max": 0.0,
+        "mean": 0.0
+      },
+      "stats": {
+        "std": 0.0,
+        "count": 280800,
+        "data_quality": 1.0
+      }
+    },
+    "DM-PIT01-HH": {
+      "type": "PRESSURE",
+      "range": {
+        "min": 0.0,
+        "max": 0.0,
+        "mean": 0.0
+      },
+      "stats": {
+        "std": 0.0,
+        "count": 280800,
+        "data_quality": 1.0
+      }
+    },
+    "1002.7-OUT": {
+      "type": "OTHER",
+      "range": {
+        "min": 302.55307,
+        "max": 398.549438,
+        "mean": 354.8197123635862
+      },
+      "stats": {
+        "std": 28.126755555053712,
+        "count": 280800,
+        "data_quality": 1.0
+      }
+    },
+    "1002.8-OUT": {
+      "type": "OTHER",
+      "range": {
+        "min": 957.97406,
+        "max": 1049.256714,
+        "mean": 996.085318257208
+      },
+      "stats": {
+        "std": 26.275468260750323,
+        "count": 280800,
+        "data_quality": 1.0
+      }
+    },
+    "1001.16-OUT": {
+      "type": "OTHER",
+      "range": {
+        "min": 13.156593,
+        "max": 39.304913,
+        "mean": 27.64215086085471
+      },
+      "stats": {
+        "std": 2.4369368851779356,
+        "count": 280800,
+        "data_quality": 1.0
+      }
+    },
+    "1001.17-OUT": {
+      "type": "OTHER",
+      "range": {
+        "min": 13.156593,
+        "max": 39.304913,
+        "mean": 27.64215086085471
+      },
+      "stats": {
+        "std": 2.4369368851779356,
+        "count": 280800,
+        "data_quality": 1.0
+      }
+    },
+    "1001.20-OUT": {
+      "type": "OTHER",
+      "range": {
+        "min": 13.156593,
+        "max": 39.304913,
+        "mean": 27.64215086085471
+      },
+      "stats": {
+        "std": 2.4369368851779356,
+        "count": 280800,
+        "data_quality": 1.0
+      }
+    },
+    "1001.13-OUT": {
+      "type": "OTHER",
+      "range": {
+        "min": 4.652557,
+        "max": 9.717712,
+        "mean": 6.563016420470084
+      },
+      "stats": {
+        "std": 0.6716743175959223,
+        "count": 280800,
+        "data_quality": 1.0
+      }
+    },
+    "1003.23-OUT": {
+      "type": "OTHER",
+      "range": {
+        "min": 4.652557,
+        "max": 9.717712,
+        "mean": 6.563016474811253
+      },
+      "stats": {
+        "std": 0.6716743072830516,
+        "count": 280800,
+        "data_quality": 1.0
+      }
+    },
+    "1001.15-OUT": {
+      "type": "OTHER",
+      "range": {
+        "min": 0.791179,
+        "max": 1.595464,
+        "mean": 1.1258596073254987
+      },
+      "stats": {
+        "std": 0.10873318483178927,
+        "count": 280800,
+        "data_quality": 1.0
+      }
+    },
+    "1001.14-OUT": {
+      "type": "OTHER",
+      "range": {
+        "min": 0.791179,
+        "max": 1.595464,
+        "mean": 1.125865913397436
+      },
+      "stats": {
+        "std": 0.10873277588872339,
+        "count": 280800,
+        "data_quality": 1.0
+      }
+    },
+    "1002.9-OUT": {
+      "type": "OTHER",
+      "range": {
+        "min": 48.398033,
+        "max": 66.125656,
+        "mean": 53.87186771296652
+      },
+      "stats": {
+        "std": 2.8724476080875085,
+        "count": 280800,
+        "data_quality": 1.0
+      }
+    },
+    "1002.20-OUT": {
+      "type": "OTHER",
+      "range": {
+        "min": 48.398033,
+        "max": 66.125656,
+        "mean": 53.87186781818019
+      },
+      "stats": {
+        "std": 2.872447530527541,
+        "count": 280800,
+        "data_quality": 1.0
+      }
+    },
+    "1003.18-OUT": {
+      "type": "OTHER",
+      "range": {
+        "min": 25.163055,
+        "max": 28.0,
+        "mean": 26.94239025434116
+      },
+      "stats": {
+        "std": 0.9229926658052655,
+        "count": 280800,
+        "data_quality": 1.0
+      }
+    },
+    "1003.24-OUT": {
+      "type": "OTHER",
+      "range": {
+        "min": 28.096146,
+        "max": 33.085342,
+        "mean": 30.72389869899929
+      },
+      "stats": {
+        "std": 0.9789832289865595,
+        "count": 280800,
+        "data_quality": 1.0
+      }
+    },
+    "PP04-SP-OUT": {
+      "type": "OTHER",
+      "range": {
+        "min": 27.727037,
+        "max": 27.984688,
+        "mean": 27.923365134875358
+      },
+      "stats": {
+        "std": 0.10972155057761207,
+        "count": 280800,
+        "data_quality": 1.0
+      }
+    },
+    "1001.2-OUT": {
+      "type": "OTHER",
+      "range": {
+        "min": 0.0,
+        "max": 0.0,
+        "mean": 0.0
+      },
+      "stats": {
+        "std": 0.0,
+        "count": 280800,
+        "data_quality": 1.0
+      }
+    },
+    "1001.7-OUT1": {
+      "type": "OTHER",
+      "range": {
+        "min": 0.0,
+        "max": 0.0,
+        "mean": 0.0
+      },
+      "stats": {
+        "std": 0.0,
+        "count": 280800,
+        "data_quality": 1.0
+      }
+    },
+    "1001.7-OUT2": {
+      "type": "OTHER",
+      "range": {
+        "min": 0.0,
+        "max": 0.0,
+        "mean": 0.0
+      },
+      "stats": {
+        "std": 0.0,
+        "count": 280800,
+        "data_quality": 1.0
+      }
+    },
+    "1001.8-OUT": {
+      "type": "OTHER",
+      "range": {
+        "min": 0.0,
+        "max": 0.0,
+        "mean": 0.0
+      },
+      "stats": {
+        "std": 0.0,
+        "count": 280800,
+        "data_quality": 1.0
+      }
+    },
+    "1002.2-OUT": {
+      "type": "OTHER",
+      "range": {
+        "min": 0.0,
+        "max": 0.0,
+        "mean": 0.0
+      },
+      "stats": {
+        "std": 0.0,
+        "count": 280800,
+        "data_quality": 1.0
+      }
+    },
+    "1002.6-OUT": {
+      "type": "OTHER",
+      "range": {
+        "min": 0.0,
+        "max": 0.0,
+        "mean": 0.0
+      },
+      "stats": {
+        "std": 0.0,
+        "count": 280800,
+        "data_quality": 1.0
+      }
+    },
+    "1002.11-OUT1": {
+      "type": "OTHER",
+      "range": {
+        "min": 0.0,
+        "max": 0.0,
+        "mean": 0.0
+      },
+      "stats": {
+        "std": 0.0,
+        "count": 280800,
+        "data_quality": 1.0
+      }
+    },
+    "1002.11-OUT2": {
+      "type": "OTHER",
+      "range": {
+        "min": 0.0,
+        "max": 0.0,
+        "mean": 0.0
+      },
+      "stats": {
+        "std": 0.0,
+        "count": 280800,
+        "data_quality": 1.0
+      }
+    },
+    "1002.12-OUT": {
+      "type": "OTHER",
+      "range": {
+        "min": 0.0,
+        "max": 0.0,
+        "mean": 0.0
+      },
+      "stats": {
+        "std": 0.0,
+        "count": 280800,
+        "data_quality": 1.0
+      }
+    },
+    "1002.16-OUT1": {
+      "type": "OTHER",
+      "range": {
+        "min": 0.0,
+        "max": 0.0,
+        "mean": 0.0
+      },
+      "stats": {
+        "std": 0.0,
+        "count": 280800,
+        "data_quality": 1.0
+      }
+    },
+    "1002.16-OUT2": {
+      "type": "OTHER",
+      "range": {
+        "min": 0.0,
+        "max": 0.0,
+        "mean": 0.0
+      },
+      "stats": {
+        "std": 0.0,
+        "count": 280800,
+        "data_quality": 1.0
+      }
+    },
+    "1002.19-OUT": {
+      "type": "OTHER",
+      "range": {
+        "min": 1.0,
+        "max": 1.0,
+        "mean": 1.0
+      },
+      "stats": {
+        "std": 0.0,
+        "count": 280800,
+        "data_quality": 1.0
+      }
+    },
+    "1002.29-OUT": {
+      "type": "OTHER",
+      "range": {
+        "min": 0.0,
+        "max": 0.0,
+        "mean": 0.0
+      },
+      "stats": {
+        "std": 0.0,
+        "count": 280800,
+        "data_quality": 1.0
+      }
+    },
+    "1002.34-OUT": {
+      "type": "OTHER",
+      "range": {
+        "min": 0.0,
+        "max": 0.0,
+        "mean": 0.0
+      },
+      "stats": {
+        "std": 0.0,
+        "count": 280800,
+        "data_quality": 1.0
+      }
+    },
+    "1003.7-OUT": {
+      "type": "OTHER",
+      "range": {
+        "min": 0.0,
+        "max": 0.0,
+        "mean": 0.0
+      },
+      "stats": {
+        "std": 0.0,
+        "count": 280800,
+        "data_quality": 1.0
+      }
+    },
+    "1003.12-OUT1": {
+      "type": "OTHER",
+      "range": {
+        "min": 0.0,
+        "max": 0.0,
+        "mean": 0.0
+      },
+      "stats": {
+        "std": 0.0,
+        "count": 280800,
+        "data_quality": 1.0
+      }
+    },
+    "1003.12-OUT2": {
+      "type": "OTHER",
+      "range": {
+        "min": 0.0,
+        "max": 0.0,
+        "mean": 0.0
+      },
+      "stats": {
+        "std": 0.0,
+        "count": 280800,
+        "data_quality": 1.0
+      }
+    },
+    "1003.13-OUT": {
+      "type": "OTHER",
+      "range": {
+        "min": 1.0,
+        "max": 1.0,
+        "mean": 1.0
+      },
+      "stats": {
+        "std": 0.0,
+        "count": 280800,
+        "data_quality": 1.0
+      }
+    },
+    "1003.27-OUT": {
+      "type": "OTHER",
+      "range": {
+        "min": 0.0,
+        "max": 0.0,
+        "mean": 0.0
+      },
+      "stats": {
+        "std": 0.0,
+        "count": 280800,
+        "data_quality": 1.0
+      }
+    },
+    "1004.11-OUT1": {
+      "type": "OTHER",
+      "range": {
+        "min": 0.0,
+        "max": 0.0,
+        "mean": 0.0
+      },
+      "stats": {
+        "std": 0.0,
+        "count": 280800,
+        "data_quality": 1.0
+      }
+    },
+    "1004.11-OUT2": {
+      "type": "OTHER",
+      "range": {
+        "min": 0.0,
+        "max": 0.0,
+        "mean": 0.0
+      },
+      "stats": {
+        "std": 0.0,
+        "count": 280800,
+        "data_quality": 1.0
+      }
+    },
+    "1004.12-OUT1": {
+      "type": "OTHER",
+      "range": {
+        "min": 0.0,
+        "max": 0.0,
+        "mean": 0.0
+      },
+      "stats": {
+        "std": 0.0,
+        "count": 280800,
+        "data_quality": 1.0
+      }
+    },
+    "1004.12-OUT2": {
+      "type": "OTHER",
+      "range": {
+        "min": 0.0,
+        "max": 0.0,
+        "mean": 0.0
+      },
+      "stats": {
+        "std": 0.0,
+        "count": 280800,
+        "data_quality": 1.0
+      }
+    },
+    "1004.13-OUT": {
+      "type": "OTHER",
+      "range": {
+        "min": 1.0,
+        "max": 1.0,
+        "mean": 1.0
+      },
+      "stats": {
+        "std": 0.0,
+        "count": 280800,
+        "data_quality": 1.0
+      }
+    },
+    "1004.15-OUT1": {
+      "type": "OTHER",
+      "range": {
+        "min": 0.0,
+        "max": 0.0,
+        "mean": 0.0
+      },
+      "stats": {
+        "std": 0.0,
+        "count": 280800,
+        "data_quality": 1.0
+      }
+    },
+    "1004.15-OUT2": {
+      "type": "OTHER",
+      "range": {
+        "min": 0.0,
+        "max": 0.0,
+        "mean": 0.0
+      },
+      "stats": {
+        "std": 0.0,
+        "count": 280800,
+        "data_quality": 1.0
+      }
+    },
+    "1004.18-OUT1": {
+      "type": "OTHER",
+      "range": {
+        "min": 0.0,
+        "max": 0.0,
+        "mean": 0.0
+      },
+      "stats": {
+        "std": 0.0,
+        "count": 280800,
+        "data_quality": 1.0
+      }
+    },
+    "1004.18-OUT2": {
+      "type": "OTHER",
+      "range": {
+        "min": 0.0,
+        "max": 0.0,
+        "mean": 0.0
+      },
+      "stats": {
+        "std": 0.0,
+        "count": 280800,
+        "data_quality": 1.0
+      }
+    },
+    "1004.29-OUT": {
+      "type": "OTHER",
+      "range": {
+        "min": 1.0,
+        "max": 1.0,
+        "mean": 1.0
+      },
+      "stats": {
+        "std": 0.0,
+        "count": 280800,
+        "data_quality": 1.0
+      }
+    },
+    "1004.36-OUT": {
+      "type": "OTHER",
+      "range": {
+        "min": 0.0,
+        "max": 0.0,
+        "mean": 0.0
+      },
+      "stats": {
+        "std": 0.0,
+        "count": 280800,
+        "data_quality": 1.0
+      }
+    },
+    "1004.37-OUT": {
+      "type": "OTHER",
+      "range": {
+        "min": 0.0,
+        "max": 0.0,
+        "mean": 0.0
+      },
+      "stats": {
+        "std": 0.0,
+        "count": 280800,
+        "data_quality": 1.0
+      }
+    }
+  }
+}

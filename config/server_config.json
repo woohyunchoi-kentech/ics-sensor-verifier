@@ -1,0 +1,32 @@
+{
+  "server": {
+    "host": "localhost",
+    "port": 8080,
+    "max_connections": 100,
+    "timeout": 30
+  },
+  "crypto": {
+    "bulletproofs_enabled": true,
+    "pedersen_enabled": true,
+    "hmac_baseline": true,
+    "ed25519_baseline": true,
+    "key_size": 256
+  },
+  "sensors": {
+    "sampling_rate": 1.0,
+    "batch_size": 100,
+    "max_sensors": 50,
+    "async_mode": true
+  },
+  "experiments": {
+    "scalability_test": true,
+    "baseline_comparison": true,
+    "range_violation_test": true
+  },
+  "logging": {
+    "level": "INFO",
+    "file": "logs/app.log",
+    "max_size": "10MB",
+    "backup_count": 5
+  }
+}

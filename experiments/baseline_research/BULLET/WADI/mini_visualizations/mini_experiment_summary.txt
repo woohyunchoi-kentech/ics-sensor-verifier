@@ -1,0 +1,32 @@
+WADI BulletProofs Mini Experiment Summary
+==================================================
+
+Total Conditions: 16
+Total Requests: 160
+Overall Success Rate: 100.0%
+Average Response Time: 90.7 ms
+Best Performance: 14.2 ms
+Worst Performance: 225.4 ms
+Average CPU Usage: 9.7%
+Average Memory Usage: 10.2 GB
+Proof Size: 1395 bytes
+
+
+Condition Details:
+------------------------------
+Condition  1:   1 sensors ×   1 Hz →   100% success,  187.8ms avg
+Condition  2:   1 sensors ×   2 Hz →   100% success,  175.4ms avg
+Condition  3:   1 sensors ×  10 Hz →   100% success,   72.2ms avg
+Condition  4:   1 sensors × 100 Hz →   100% success,   14.2ms avg
+Condition  5:  10 sensors ×   1 Hz →   100% success,  145.0ms avg
+Condition  6:  10 sensors ×   2 Hz →   100% success,   90.5ms avg
+Condition  7:  10 sensors ×  10 Hz →   100% success,   57.4ms avg
+Condition  8:  10 sensors × 100 Hz →   100% success,   15.9ms avg
+Condition  9:  50 sensors ×   1 Hz →   100% success,  115.4ms avg
+Condition 10:  50 sensors ×   2 Hz →   100% success,  139.9ms avg
+Condition 11:  50 sensors ×  10 Hz →   100% success,   73.8ms avg
+Condition 12:  50 sensors × 100 Hz →   100% success,   16.3ms avg
+Condition 13: 100 sensors ×   1 Hz →   100% success,   49.0ms avg
+Condition 14: 100 sensors ×   2 Hz →   100% success,  225.4ms avg
+Condition 15: 100 sensors ×  10 Hz →   100% success,   58.6ms avg
+Condition 16: 100 sensors × 100 Hz →   100% success,   14.6ms avg
