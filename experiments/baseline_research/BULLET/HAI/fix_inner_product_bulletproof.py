@@ -117,7 +117,11 @@ class FixInnerProductBulletproof:
                     "inner_product_proof": inner_proof
                 },
                 "range_min": 0,
-                "range_max": (1 << self.bit_length) - 1
+                "range_max": (1 << self.bit_length) - 1,
+                "opening": {
+                    "x": value,  # Scaled integer value (×1000)
+                    "r": gamma.hex()  # Pedersen blinding factor
+                }
             }
             
             print(f"  ✅ Inner Product 수정 증명 완료")

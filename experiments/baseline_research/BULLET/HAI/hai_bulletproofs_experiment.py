@@ -38,12 +38,22 @@ class ExperimentConfig:
     target_requests: int = 1000
     server_url: str = "http://192.168.0.11:8085/api/v1/verify/bulletproof"
     bit_length: int = 32
-    
+
+    # Policy 설정
+    policy: str = "ZK_ONLY"  # "ZK_ONLY" | "SELECTIVE" | "RAW"
+    upper_bounds: Dict[str, float] = None  # 센서별 상한값
+    lower_bounds: Dict[str, float] = None  # 센서별 하한값
+    roc_threshold: float = 0.0  # Rate of Change 임계값
+
     def __post_init__(self):
         if self.sensor_counts is None:
             self.sensor_counts = [1, 10, 50, 100]
         if self.frequencies is None:
             self.frequencies = [1, 2, 10, 100]
+        if self.upper_bounds is None:
+            self.upper_bounds = {}
+        if self.lower_bounds is None:
+            self.lower_bounds = {}
 
 
 @dataclass
@@ -74,6 +84,10 @@ class ExperimentResult:
     end_time: str
     duration_seconds: float
     actual_frequency: float
+
+    # Policy 관련
+    policy: str = "ZK_ONLY"
+    selective_disclosure_rate: float = 0.0  # SDR (%)
 
 
 class BulletproofGenerator:
@@ -245,13 +259,47 @@ class BulletproofExperiment:
         self.generator = FixInnerProductBulletproof()
         self.data_loader = HAIDataLoader()
         self.results = []
-        
+        self.sensor_state = {}  # 센서별 이전 값 저장 {sensor_name: prev_value}
+
+    def is_alarm(self, sensor_name: str, curr: float, prev: float = None) -> bool:
+        """
+        알람 판정 함수
+
+        Args:
+            sensor_name: 센서 이름
+            curr: 현재 값
+            prev: 이전 값 (None이면 상태에서 조회)
+
+        Returns:
+            bool: 알람 여부
+        """
+        # 이전 값 조회
+        if prev is None:
+            prev = self.sensor_state.get(sensor_name, curr)
+
+        # 경계값 조회 (없으면 무한대로 설정)
+        lower_bound = self.config.lower_bounds.get(sensor_name, float('-inf'))
+        upper_bound = self.config.upper_bounds.get(sensor_name, float('inf'))
+
+        # 알람 판정: 경계 초과 또는 변화율 초과
+        boundary_violation = (curr < lower_bound) or (curr > upper_bound)
+        roc_violation = abs(curr - prev) > self.config.roc_threshold if self.config.roc_threshold > 0 else False
+
+        # 상태 업데이트
+        self.sensor_state[sensor_name] = curr
+
+        return boundary_violation or roc_violation
+
     def run_single_condition(self, sensor_count: int, frequency: int, condition_id: int) -> ExperimentResult:
         """단일 조건 실험 실행"""
         print(f"\n{'='*60}")
         print(f"📊 조건 #{condition_id}: {sensor_count}센서 × {frequency}Hz")
+        print(f"🎯 정책 모드: {self.config.policy}")
         print(f"{'='*60}")
-        
+
+        # 센서 상태 초기화 (조건 간 상태 격리)
+        self.sensor_state = {}
+
         # HAI 데이터 로드
         self.data_loader.load_data()
         
@@ -285,46 +333,67 @@ class BulletproofExperiment:
         
         print(f"⏱️  실행 계획: {iterations}회 반복, {interval:.3f}초 간격")
         print(f"📊 총 {self.config.target_requests}개 요청 예정")
-        
+
         request_count = 0
-        
+        disclosure_count = 0  # Selective Disclosure 카운터
+
         try:
             for iteration in range(iterations):
                 iteration_start = time.perf_counter()
-                
+
                 # 시스템 메트릭 측정
                 cpu_usages.append(psutil.cpu_percent(interval=0.01))
                 memory_usages.append(psutil.Process().memory_info().rss / 1024 / 1024)
-                
+
                 # 각 센서별로 증명 생성 및 전송
                 for sensor_name in all_sensors:
                     if request_count >= self.config.target_requests:
                         break
-                    
+
                     try:
                         # 센서값 가져오기
                         sensor_value = sensor_data[sensor_name][iteration % len(sensor_data[sensor_name])]
-                        
-                        # Bulletproof 생성 (시간 측정)
-                        proof_start = time.perf_counter()
-                        proof_data = self.generator.create_inner_product_fixed_proof(sensor_value)
-                        proof_time = (time.perf_counter() - proof_start) * 1000
-                        
-                        # 메트릭 기록
-                        commitment_times.append(proof_time / 2)  # 대략적 분할
-                        bulletproof_times.append(proof_time / 2)
-                        
+
+                        # 🎯 정책 분기: RAW vs ZK
+                        if self.config.policy == "RAW":
+                            # RAW 모드: 평문 전송 (ZK 생성 건너뜀)
+                            proof_start = time.perf_counter()
+                            request_data = {
+                                "sensor_name": sensor_name,
+                                "raw_value": sensor_value,
+                                "mode": "RAW"
+                            }
+                            proof_time = (time.perf_counter() - proof_start) * 1000
+                            commitment_times.append(0)
+                            bulletproof_times.append(0)
+                        else:
+                            # ZK_ONLY / SELECTIVE 모드: Bulletproof 생성
+                            proof_start = time.perf_counter()
+                            proof_data = self.generator.create_inner_product_fixed_proof(int(sensor_value * 1000))
+                            proof_time = (time.perf_counter() - proof_start) * 1000
+
+                            # 메트릭 기록
+                            commitment_times.append(proof_time / 2)
+                            bulletproof_times.append(proof_time / 2)
+
+                            # 기본 요청 데이터
+                            request_data = {
+                                "commitment": proof_data["commitment"],
+                                "proof": proof_data["proof"],
+                                "range_min": proof_data["range_min"],
+                                "range_max": proof_data["range_max"]
+                            }
+
+                            # 🎯 SELECTIVE 모드: 알람 시 opening 추가
+                            if self.config.policy == "SELECTIVE":
+                                is_alarm_state = self.is_alarm(sensor_name, sensor_value)
+                                if is_alarm_state:
+                                    request_data["opening"] = proof_data["opening"]
+                                    disclosure_count += 1
+
                         # 서버로 전송
                         verify_start = time.perf_counter()
-                        
-                        # 요청 데이터 준비
-                        request_data = {
-                            "commitment": proof_data["commitment"],
-                            "proof": proof_data["proof"],
-                            "range_min": proof_data["range_min"],
-                            "range_max": proof_data["range_max"]
-                        }
-                        
+
                         # 증명 크기 계산
                         proof_size = len(json.dumps(request_data).encode())
                         proof_sizes.append(proof_size)
@@ -386,7 +455,10 @@ class BulletproofExperiment:
         # 결과 계산
         success_rate = (successful_requests / max(request_count, 1)) * 100
         verification_rate = success_rate  # Bulletproof에서는 동일
-        
+
+        # 🎯 SDR (Selective Disclosure Rate) 계산
+        sdr = (disclosure_count / max(request_count, 1)) * 100 if request_count > 0 else 0.0
+
         result = ExperimentResult(
             condition_id=condition_id,
             sensor_count=sensor_count,
@@ -406,15 +478,20 @@ class BulletproofExperiment:
             start_time=start_time.isoformat(),
             end_time=end_time.isoformat(),
             duration_seconds=duration,
-            actual_frequency=request_count / duration if duration > 0 else 0
+            actual_frequency=request_count / duration if duration > 0 else 0,
+            policy=self.config.policy,
+            selective_disclosure_rate=sdr
         )
         
         # 결과 출력
         print(f"\n📊 조건 #{condition_id} 완료:")
+        print(f"  • 정책 모드: {result.policy}")
         print(f"  • 총 요청: {result.total_requests}")
         print(f"  • 성공: {result.successful_requests}")
         print(f"  • 실패: {result.failed_requests}")
         print(f"  • 성공률: {result.success_rate:.1f}%")
+        if result.policy == "SELECTIVE":
+            print(f"  • 📊 SDR (Selective Disclosure Rate): {result.selective_disclosure_rate:.2f}% ({disclosure_count}/{request_count})")
         print(f"  • 평균 커밋먼트 시간: {result.avg_commitment_time:.2f}ms")
         print(f"  • 평균 Bulletproof 시간: {result.avg_bulletproof_time:.2f}ms")
         print(f"  • 평균 검증 시간: {result.avg_verification_time:.2f}ms")
