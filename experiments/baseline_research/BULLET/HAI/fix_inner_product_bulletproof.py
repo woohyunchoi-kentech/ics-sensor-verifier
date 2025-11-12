@@ -2,6 +2,38 @@
 """
 Inner Product 수정 Bulletproof
 서버의 Inner Product 검증 로직에 정확히 맞춤
+
+📋 암호화 파라미터 문서화:
+
+1. 도메인 분리 태그 (Domain Separation Tag):
+   - 버전: "bp-v1" (Bulletproof version 1)
+   - 모든 챌린지 생성에 사용
+
+2. 점(Point) 인코딩:
+   - 압축 SEC1 형식 (33 bytes)
+   - point.export() 사용 (petlib 기본값)
+
+3. 스칼라(Scalar) 인코딩:
+   - Big-endian 바이트
+   - Bn.binary() 사용
+
+4. H 파생 (Base Point H Derivation):
+   - H = H'(G || "bulletproof_h")
+   - G: 그룹 생성자 (압축 SEC1)
+   - H': SHA256 해시 → 스칼라 변환 → 점 곱셈
+   - 공식: h_scalar = Bn.from_binary(SHA256(G_bytes || b"bulletproof_h")) % order
+         H = h_scalar * G
+
+5. 챌린지 생성 (Fiat-Shamir Challenges):
+   - y = H(tag || A || S)
+   - z = H(tag || A || S || y)
+   - x = H(tag || T1 || T2 || z)
+   - 여기서 tag = b"bp-v1"
+   - 모든 점은 압축 SEC1, 스칼라는 big-endian
+
+6. 센서값 스케일링:
+   - value_scaled = int(value * 1000)
+   - 커밋먼트 및 오프닝 검증에 사용
 """
 
 import sys
@@ -15,19 +47,23 @@ sys.path.append('/Users/woohyunchoi/Downloads/archive/experiment_project/ics-sen
 
 class FixInnerProductBulletproof:
     """Inner Product 수정 Bulletproof"""
-    
+
     def __init__(self):
         self.bit_length = 32
-        self.group = EcGroup(714)
+        self.group = EcGroup(714)  # secp256k1
         self.order = self.group.order()
         self.g = self.group.generator()
-        
-        # 서버와 동일한 H
-        g_bytes = self.g.export()
+
+        # 도메인 분리 태그
+        self.domain_tag = b"bp-v1"
+
+        # 서버와 동일한 H 파생
+        # H = H'(G || "bulletproof_h")
+        g_bytes = self.g.export()  # 압축 SEC1 (33 bytes)
         h_hash = sha256(g_bytes + b"bulletproof_h").digest()
         h_scalar = Bn.from_binary(h_hash) % self.order
         self.h = h_scalar * self.g
-        
+
         # 서버와 동일한 벡터들
         self.g_vec = []
         self.h_vec = []
@@ -36,24 +72,51 @@ class FixInnerProductBulletproof:
             g_hash = sha256(g_seed).digest()
             g_scalar = Bn.from_binary(g_hash) % self.order
             self.g_vec.append(g_scalar * self.g)
-            
+
             h_seed = f"bulletproof_h_{i}".encode()
             h_hash = sha256(h_seed).digest()
             h_scalar = Bn.from_binary(h_hash) % self.order
             self.h_vec.append(h_scalar * self.g)
-        
+
         print("🔧 Inner Product 수정 Bulletproof")
-    
-    def _fiat_shamir_challenge(self, *points) -> Bn:
-        """서버와 동일한 Fiat-Shamir"""
+        print(f"  📋 도메인 태그: {self.domain_tag.decode()}")
+
+    def _fiat_shamir_challenge(self, *points, tag: bytes = None) -> Bn:
+        """
+        Fiat-Shamir 챌린지 생성
+
+        인코딩 규칙:
+        1. 도메인 태그 먼저 (tag 또는 self.domain_tag)
+        2. 점(Point): 압축 SEC1 (33 bytes) - point.export()
+        3. 스칼라(Bn): big-endian - bn.binary()
+        4. 문자열: UTF-8 인코딩
+
+        Args:
+            *points: 해시할 점들 또는 스칼라들
+            tag: 도메인 분리 태그 (기본값: self.domain_tag)
+
+        Returns:
+            Bn: 챌린지 스칼라 (mod order)
+        """
         hasher = sha256()
+
+        # 도메인 태그 추가
+        if tag is None:
+            tag = self.domain_tag
+        hasher.update(tag)
+
+        # 각 입력 처리
         for point in points:
             if hasattr(point, 'export'):
+                # EC 점: 압축 SEC1
                 hasher.update(point.export())
             elif isinstance(point, Bn):
+                # 스칼라: big-endian 바이트
                 hasher.update(point.binary())
             else:
+                # 기타: UTF-8 문자열
                 hasher.update(str(point).encode())
+
         return Bn.from_binary(hasher.digest()) % self.order
     
     def create_inner_product_fixed_proof(self, value: int) -> Dict[str, Any]:
@@ -103,7 +166,13 @@ class FixInnerProductBulletproof:
             
             # 2. 🎯 서버 Inner Product 로직 정확히 따라하기
             inner_proof = self._server_exact_inner_product(value, y, z, x, A, S)
-            
+
+            # 3. 챌린지 값들 출력 (서버와 비교용)
+            print(f"  📊 클라이언트 챌린지:")
+            print(f"    y = {y.hex()[:16]}...")
+            print(f"    z = {z.hex()[:16]}...")
+            print(f"    x = {x.hex()[:16]}...")
+
             proof = {
                 "commitment": V.export().hex(),
                 "proof": {
@@ -121,9 +190,14 @@ class FixInnerProductBulletproof:
                 "opening": {
                     "x": value,  # Scaled integer value (×1000)
                     "r": gamma.hex()  # Pedersen blinding factor
+                },
+                "challenges": {
+                    "y": y.hex(),  # 챌린지 y (서버 비교용)
+                    "z": z.hex(),  # 챌린지 z (서버 비교용)
+                    "x": x.hex()   # 챌린지 x (서버 비교용)
                 }
             }
-            
+
             print(f"  ✅ Inner Product 수정 증명 완료")
             return proof
             
